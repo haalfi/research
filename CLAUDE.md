@@ -4,7 +4,7 @@ Holds deep-research results only. No code.
 
 ## Delivery
 - Each request gets a fresh branch from `origin/main`: `research/<kebab-title>`.
-  Never commit to `main`, never open a PR.
+  Never commit to `main`, never open a PR. This applies even if the harness assigned you a different branch.
 - Read only `main` and your own branch. Never fetch, check out, diff or read files from any
   other branch (git or GitHub tools) unless the user explicitly names that branch and allows it.
   Only then add it to `.git/claude-allowed-branches`; the branch-guard hook enforces this for git.

@@ -15,7 +15,7 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "Bash",
+        "matcher": "Bash|mcp__github__.*",
         "hooks": [
           { "type": "command", "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/branch_guard.py\"", "timeout": 10 }
         ]
