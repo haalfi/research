@@ -1,6 +1,6 @@
 # Bind every spec category to its check
 
-Revision history: [CHANGELOG](CHANGELOG.md). v1 (search extracts only) is at git tag `report-v1`.
+Revision history: [CHANGELOG](CHANGELOG.md). v1 (search extracts only) is on branch `archive/report-v1` (commit `6a1e9f7`).
 
 The best-founded method for specifying observable behaviour at a black-box library boundary is not a single notation. It is **Design by Contract extended into an assume–guarantee contract**, with five parts:
 

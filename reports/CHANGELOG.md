@@ -1,6 +1,6 @@
 # Changelog: Black box boundary spec methods
 
-v1 is the commit tagged `report-v1` (`reports/Black box boundary spec methods.md` there); v2 is the current report.
+v1 is `reports/Black box boundary spec methods.md` on branch `archive/report-v1` (commit `6a1e9f7`); v2 is the current report.
 
 ## v2 (2026-10-22): full-text verification pass
 

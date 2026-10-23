@@ -37,7 +37,7 @@ None of this touches the quantifier rule or the categories.
 
 ### Cited Findings
 
-Verification table. "Line" refers to `reports/Black box boundary spec methods.md` at tag `report-v1` as checked out.
+Verification table. "Line" refers to `reports/Black box boundary spec methods.md` on branch `archive/report-v1` (commit `6a1e9f7`) as checked out.
 
 | ID | Report location | Claim (short) | Source URL actually read | Verdict | Correction / quote |
 |---|---|---|---|---|---|

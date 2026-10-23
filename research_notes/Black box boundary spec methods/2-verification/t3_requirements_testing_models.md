@@ -1,6 +1,6 @@
 # T3 verification: requirements-boundary methods, conformance/model-based testing, executable reference models, checking from outside
 
-Scope: report `reports/Black box boundary spec methods.md` at tag `report-v1` § 3.6 (l. 236–249), § 3.7 (l. 250–259), § 3.8 (l. 260–270), § 3.10 (l. 277–291), § 5 (l. 330–374), the matching § 8.2 source rows, and the ShardStore/Cedar/SQLite mentions in § 1, § 2.2, § 2.3 and § 7.3 that rest on the same sources.
+Scope: report `reports/Black box boundary spec methods.md` on branch `archive/report-v1` (commit `6a1e9f7`) § 3.6 (l. 236–249), § 3.7 (l. 250–259), § 3.8 (l. 260–270), § 3.10 (l. 277–291), § 5 (l. 330–374), the matching § 8.2 source rows, and the ShardStore/Cedar/SQLite mentions in § 1, § 2.2, § 2.3 and § 7.3 that rest on the same sources.
 
 Method: every verdict below comes from a full text downloaded on 2026-10-22 into a temporary container directory (not kept; each verdict names its source URL) and read with `pdftotext`. No verdict rests on a search extract. Where the cited host failed, I tried alternates. Grades follow the brief: A = peer-reviewed or measured study, B = industrial practice with data, C = practitioner report without data, D = opinion or marketing.
 

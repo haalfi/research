@@ -21,5 +21,5 @@ reliably.
 **Conventions:**
 - The files in `briefs/` are the inputs exactly as they were given, so the
   paths they mention are from before this layout.
-- Line numbers in the verification notes refer to v1, which is at git tag
-  `report-v1`.
+- Line numbers in the verification notes refer to v1, which is on branch
+  `archive/report-v1` (commit `6a1e9f7`).

@@ -1,6 +1,6 @@
 # T5: Verification of the agentic evidence (report § 6, agent figures in § 7–8) and disconfirming search on spec formats
 
-Scope: verification pass over `reports/Black box boundary spec methods.md` at tag `report-v1` § 6 (lines 375–420), the agent-related cells in § 7 (lines 431, 436, 437, 455, 484, 503, 524–527) and § 8 (lines 542, 545, 631–656), and their notes in `research_notes/Black box boundary spec methods/1-survey/agentic_evidence.md`. Every verdict below rests on a full text downloaded on 2026-10-22 from arxiv.org (PDF → pdftotext), not on search extracts. Version histories come from the arXiv abstract pages. Venues come from the arXiv comments/journal-ref field, the PDF headers, the OpenReview API (api2.openreview.net/notes/search), conference pages on researchr.org, and the Semantic Scholar batch API (it worked on the second attempt, after an initial 429). DBLP and OpenReview PDF downloads returned bot challenges (DBLP "Making sure you're not a bot", OpenReview 403 ChallengeRequiredError), so the TMLR camera-ready of Vericoding could be read only through its OpenReview abstract. Grades follow the brief: A = peer-reviewed or measured, B = industrial with data, C = practitioner report, D = opinion. "A-pre" = arXiv-only. Inference is marked *Inference*.
+Scope: verification pass over `reports/Black box boundary spec methods.md` on branch `archive/report-v1` (commit `6a1e9f7`) § 6 (lines 375–420), the agent-related cells in § 7 (lines 431, 436, 437, 455, 484, 503, 524–527) and § 8 (lines 542, 545, 631–656), and their notes in `research_notes/Black box boundary spec methods/1-survey/agentic_evidence.md`. Every verdict below rests on a full text downloaded on 2026-10-22 from arxiv.org (PDF → pdftotext), not on search extracts. Version histories come from the arXiv abstract pages. Venues come from the arXiv comments/journal-ref field, the PDF headers, the OpenReview API (api2.openreview.net/notes/search), conference pages on researchr.org, and the Semantic Scholar batch API (it worked on the second attempt, after an initial 429). DBLP and OpenReview PDF downloads returned bot challenges (DBLP "Making sure you're not a bot", OpenReview 403 ChallengeRequiredError), so the TMLR camera-ready of Vericoding could be read only through its OpenReview abstract. Grades follow the brief: A = peer-reviewed or measured, B = industrial with data, C = practitioner report, D = opinion. "A-pre" = arXiv-only. Inference is marked *Inference*.
 
 ## Q1. What survives contact with the full texts? (claim-by-claim verdicts)
 
@@ -9,7 +9,7 @@ Most § 6 figures exist in the papers, but **five claims are materially wrong or
 
 ### Cited Findings
 
-**Verdict table** (report line numbers refer to `reports/Black box boundary spec methods.md` at tag `report-v1`)
+**Verdict table** (report line numbers refer to `reports/Black box boundary spec methods.md` on branch `archive/report-v1` (commit `6a1e9f7`))
 
 | ID | Report location | Claim (short) | Source actually read | Verdict | Correction / quote |
 |---|---|---|---|---|---|
