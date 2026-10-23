@@ -11,7 +11,8 @@ if [ ${#failed[@]} -eq 0 ]; then
   echo "Preflight OK: arxiv.org, docs.python.org and raw.githubusercontent.com return 200."
 else
   echo "Preflight FAILED: ${failed[*]}. Stop before research and report these hosts;"
-  echo "code 000 usually means the environment's Network access setting blocks them."
+  echo "000 = no HTTP response: the proxy blocked it (fix: the environment's Network access setting)."
+  echo "An HTTP code such as 403 = the site itself refused."
 fi
 echo "Current branch: ${branch:-unknown}. Deliver on a fresh research/<kebab-title> branch from origin/main; no PR."
 exit 0

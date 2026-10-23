@@ -4,8 +4,11 @@
 Bash (git, also inside `bash -c`):
 - no commit or push while on `main`; push only to the current branch;
 - fetch/pull must name a branch (a bare fetch reads every branch);
-- no --all/--branches/--remotes/--glob/--mirror (except `git branch`);
-- no ref argument naming another branch (local, `origin/x`, `x:path`, `a..b`).
+- no --all/--branches/--remotes/--glob/--mirror (except `git branch`), no `remote update`;
+- `git clone` of this repo needs `--single-branch -b <allowed branch>`;
+- no ref argument or ref-valued option (`--source=x`, `--onto x`) naming another branch
+  (local, `origin/x`, `x:path`, `a..b`).
+Listing branch names (`git branch -a`, `ls-remote`, `for-each-ref`) stays allowed.
 GitHub MCP tools on this repo: ref/branch/sha arguments must be allowed branches;
 writes never target `main`; no pull requests.
 
@@ -23,12 +26,22 @@ import sys
 REF_CMDS = {"checkout", "switch", "show", "diff", "log", "merge", "rebase", "cherry-pick",
             "rev-list", "shortlog", "whatchanged", "ls-tree", "cat-file", "archive",
             "restore", "reset", "worktree", "branch", "blame", "grep", "format-patch",
-            "rev-parse", "merge-base", "range-diff", "show-branch", "name-rev", "describe"}
+            "rev-parse", "merge-base", "range-diff", "show-branch", "name-rev", "describe",
+            "cherry"}
 ALL_REFS = re.compile(r"--(all|branches|remotes|glob|mirror)(=|$)")
 NEW_BRANCH_OPTS = {"-b", "-B", "-c", "-C", "--orphan", "--create", "--force-create"}
 BRANCH_CREATORS = {"checkout", "switch", "branch", "worktree"}
-OPTS_WITH_ARG = {"-m", "-F", "-n", "-S", "-G", "--grep", "--author", "--format", "--pretty",
-                 "--depth", "-o", "--since", "--until"}
+LOG_FAMILY = {"log", "show", "diff", "rev-list", "shortlog", "whatchanged", "format-patch", "range-diff"}
+COMMON_ARG_OPTS = {"--format", "--pretty", "--grep", "--author", "--committer", "--since",
+                   "--until", "--date", "--depth"}
+ARG_OPTS = {  # per command: options whose next token is a value, not a ref
+    **{c: {"-n", "-S", "-G", "-L"} for c in LOG_FAMILY},
+    "commit": {"-m", "-F"}, "merge": {"-m", "-F"}, "tag": {"-m", "-F"},
+    "push": {"-o", "--push-option", "--repo"}, "clone": {"-o", "--origin", "--depth"},
+}
+REF_VALUE_OPTS = {"--source", "--onto", "--contains", "--no-contains", "--merged",
+                  "--no-merged", "--points-at", "--fork-point"}
+CMD_REF_VALUE_OPTS = {"restore": {"-s"}, "commit": {"-c", "-C", "--fixup", "--squash"}}
 GLOBAL_OPTS_WITH_ARG = {"-C", "-c", "--git-dir", "--work-tree", "--namespace"}
 WRAPPERS = {"env", "command", "nice", "nohup", "time", "sudo", "exec"}
 SHELLS = {"bash", "sh", "zsh", "dash"}
@@ -163,21 +176,53 @@ def check_segment(seg, cwd):
     if cmd in ("commit", "push") and current == "main":
         return f"`git {cmd}` on main is not allowed; create a research/<kebab-title> branch first"
 
-    opts_with_arg = OPTS_WITH_ARG - {"-n"} if cmd == "push" else OPTS_WITH_ARG  # push -n = dry run
-    pos, skip = [], False
+    if cmd == "remote" and rest[:1] == ["update"]:
+        return "`git remote update` fetches every branch; use `git fetch origin <branch>`"
+
+    arg_opts = COMMON_ARG_OPTS | ARG_OPTS.get(cmd, set())
+    ref_opts = REF_VALUE_OPTS | CMD_REF_VALUE_OPTS.get(cmd, set())
+    pos, refs, values, mode = [], [], {}, None  # mode: what the next token is
     for a in rest:
         if a == "--":
             break
-        if skip:
-            skip = False
+        if mode:
+            if mode == "ref":
+                refs.append(a)
+            elif mode != "skip":
+                values.setdefault(mode, a)
+            mode = None
+            continue
+        opt, eq, val = a.partition("=")
+        if a.startswith("--") and eq:
+            if opt in ref_opts:
+                refs.append(val)
+            values.setdefault(opt, val)
             continue
         if a in NEW_BRANCH_OPTS and cmd in BRANCH_CREATORS:  # next token is a new name, not a read
-            skip = True
-            continue
-        if a.startswith("-"):
-            skip = a in opts_with_arg
-            continue
-        pos.append(a)
+            mode = "skip"
+        elif a in ref_opts:
+            mode = "ref"
+        elif cmd == "clone" and a in ("-b", "--branch"):
+            mode = "--branch"
+        elif a.startswith("-"):
+            mode = "skip" if a in arg_opts else None
+            values.setdefault(a, "")
+        else:
+            pos.append(a)
+
+    for r in refs:
+        for name, _ in ref_names(r):
+            if name not in SPECIAL and name not in allowed:
+                return f"`git {cmd}` reads branch `{name}`"
+    if cmd == "clone":
+        repo = this_repo(cwd)
+        url = pos[0].lower().rstrip("/") if pos else ""
+        top = git(cwd, "rev-parse", "--show-toplevel")
+        if repo and (url.removesuffix(".git").endswith("/".join(repo)) or
+                     (top and os.path.realpath(os.path.join(cwd, pos[0])) == top)):
+            if "--single-branch" not in values or values.get("--branch", "") not in allowed:
+                return "`git clone` of this repo copies every branch; add `--single-branch -b main`"
+        return None
 
     if cmd in ("fetch", "pull"):
         specs = pos[1:]

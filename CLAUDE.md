@@ -1,6 +1,6 @@
 # research
 
-Holds deep-research results only. No code.
+Holds deep-research results only. No code besides `.claude/`.
 
 ## Delivery
 - Each request gets a fresh branch from `origin/main`: `research/<kebab-title>`, even if the
@@ -10,7 +10,7 @@ Holds deep-research results only. No code.
   Only then add it to `.git/claude-allowed-branches`; the branch-guard hook enforces this.
 - Commit and push early and often. The container is ephemeral; commit notes after each track.
 - Layout:
-  - `briefs/`: the input brief, exactly as given
+  - `briefs/<Title>.md`: the input brief, exactly as given
   - `research_notes/<Title>/`: one notes file per track
   - `reports/<Title>.md`: the final report
 - A follow-up or verification run gets a new title (e.g. `<Title> verified`).
