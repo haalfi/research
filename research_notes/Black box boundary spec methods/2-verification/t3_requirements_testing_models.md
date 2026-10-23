@@ -1,8 +1,8 @@
 # T3 verification: requirements-boundary methods, conformance/model-based testing, executable reference models, checking from outside
 
-Scope: report `reports/Black box boundary spec methods.md` § 3.6 (l. 236–249), § 3.7 (l. 250–259), § 3.8 (l. 260–270), § 3.10 (l. 277–291), § 5 (l. 330–374), the matching § 8.2 source rows, and the ShardStore/Cedar/SQLite mentions in § 1, § 2.2, § 2.3 and § 7.3 that rest on the same sources.
+Scope: report `reports/Black box boundary spec methods.md` at tag `report-v1` § 3.6 (l. 236–249), § 3.7 (l. 250–259), § 3.8 (l. 260–270), § 3.10 (l. 277–291), § 5 (l. 330–374), the matching § 8.2 source rows, and the ShardStore/Cedar/SQLite mentions in § 1, § 2.2, § 2.3 and § 7.3 that rest on the same sources.
 
-Method: every verdict below comes from a full text downloaded on 2026-10-22 into `/tmp/claude-0/-home-user-research/6eb654f9-be93-5692-960f-f1941dafeecc/scratchpad/dl_t3/` and read with `pdftotext`. No verdict rests on a search extract. Where the cited host failed, I tried alternates. Grades follow the brief: A = peer-reviewed or measured study, B = industrial practice with data, C = practitioner report without data, D = opinion or marketing.
+Method: every verdict below comes from a full text downloaded on 2026-10-22 into a temporary container directory (not kept; each verdict names its source URL) and read with `pdftotext`. No verdict rests on a search extract. Where the cited host failed, I tried alternates. Grades follow the brief: A = peer-reviewed or measured study, B = industrial practice with data, C = practitioner report without data, D = opinion or marketing.
 
 Hosts that failed: apps.dtic.mil (403), discovery.ucl.ac.uk (403), eweek.com (403), jamasoftware.com (403), cacm.acm.org and cacmb4.acm.org (403), dl.acm.org (403, per the brief), procon.bg (503 twice), repositoriosdigitales.mincyt.gob.ar (connection reset), ri.conicet.gov.ar (timeout), www.cis.upenn.edu (TLS chain failure with curl, 503 with WebFetch), www.cs.utexas.edu and web.eecs.umich.edu (TLS chain failure), api.github.com for TorXakis (session policy 403; I used an anonymous `git clone` instead).
 

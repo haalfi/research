@@ -1,6 +1,6 @@
 # T1 verification: categories, levels and forms (§ 1, § 2.1–2.4), contract languages (§ 3.1), model-oriented methods (§ 3.2), lifecycle methods (§ 3.3)
 
-Method note. Every verdict below comes from a full text (or, for API docs, the full page) downloaded this session with curl into `/tmp/claude-0/-home-user-research/6eb654f9-be93-5692-960f-f1941dafeecc/scratchpad/dl_t1/` and read as text (pdftotext, or HTML stripped by `python3 -I`). There are two exceptions, both marked: the Zave page (curl connection reset; read through WebFetch, which returns a model summary) and Wing 1990 (a scanned PDF with no text layer; pages rendered as images and read). Where a host failed I tried alternate copies first. "Unverifiable" means every copy I tried failed; no verdict rests on search extracts. Grades follow the brief: A peer-reviewed or measured, B documented industrial practice with data (the report also files normative standards and official docs under B), C practitioner report without data, D opinion or marketing. *Inference* marks my own reasoning.
+Method note. Every verdict below comes from a full text (or, for API docs, the full page) downloaded this session with curl into a temporary container directory (not kept; each verdict names its source URL) and read as text (pdftotext, or HTML stripped by `python3 -I`). There are two exceptions, both marked: the Zave page (curl connection reset; read through WebFetch, which returns a model summary) and Wing 1990 (a scanned PDF with no text layer; pages rendered as images and read). Where a host failed I tried alternate copies first. "Unverifiable" means every copy I tried failed; no verdict rests on search extracts. Grades follow the brief: A peer-reviewed or measured, B documented industrial practice with data (the report also files normative standards and official docs under B), C practitioner report without data, D opinion or marketing. *Inference* marks my own reasoning.
 
 Hosts that failed this session (each one tried more than once):
 - cs.ucf.edu: TLS "self-signed certificate in certificate chain"; WebFetch returned 503. This blocks the Larch FAQ and JML RM ch. 9.
@@ -37,7 +37,7 @@ None of this touches the quantifier rule or the categories.
 
 ### Cited Findings
 
-Verification table. "Line" refers to `reports/Black box boundary spec methods.md` as checked out.
+Verification table. "Line" refers to `reports/Black box boundary spec methods.md` at tag `report-v1` as checked out.
 
 | ID | Report location | Claim (short) | Source URL actually read | Verdict | Correction / quote |
 |---|---|---|---|---|---|

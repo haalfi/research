@@ -1,7 +1,7 @@
 # Open items after the verification pass
 
 These are the items the pass could not close. IDs refer to
-`research_notes/Black box boundary spec methods/verification_log.md`.
+`research_notes/Black box boundary spec methods/2-verification/verification_log.md`.
 
 ## 1. Unverifiable: full text unreachable (15)
 
