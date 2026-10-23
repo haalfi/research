@@ -5,6 +5,8 @@ Holds deep-research results only. No code.
 ## Delivery
 - Each request gets a fresh branch from `origin/main`: `research/<kebab-title>`.
   Never commit to `main`, never open a PR.
+- Read only `main` and your own branch. Never fetch, check out, diff or read files from any
+  other branch (git or GitHub tools) unless the user explicitly names that branch and allows it.
 - Commit and push early and often. The container is ephemeral; commit notes after each track.
 - Layout:
   - `briefs/`: the input brief, exactly as given
