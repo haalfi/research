@@ -24,15 +24,3 @@ the brief sessions read; this file is for you.
 - Search extracts are leads, not evidence; claims based on them often have the wrong
   figures, scope or attribution. Either confirm full-text access with the preflight, or
   plan a verification pass.
-
-## Workflow
-- Hooks in `.claude/hooks/`:
-  - `preflight.sh` probes three hosts at session start.
-  - `branch_guard.py` blocks git and GitHub-tool calls that touch branches other than
-    `main` and the session's own, commits or pushes on `main`, and pull requests. It is
-    a guardrail, not a sandbox.
-- To let a session read another branch (e.g. to verify an earlier run), name the branch
-  and allow it explicitly.
-- Expect one commit per research track: the container is ephemeral, and the cloud
-  environment's own stop hook asks for commits. That hook is not part of this repo.
-- A follow-up run gets a new title, so the old and new reports can be diffed.
