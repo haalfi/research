@@ -19,8 +19,7 @@ Holds deep-research results only. No code besides `.claude/`.
 
 ## Running
 - Use the `deep-research` skill.
-- Preflight: `curl -sS -o /dev/null -w "%{http_code}\n" https://arxiv.org/abs/2509.22908`.
-  If it isn't 200, stop and name the blocked hosts. The fix is the environment's Network access setting, not settings.json.
+- The startup hook reports a network preflight. If it says FAILED, stop and name the blocked hosts.
 - A 403 after `200 Connection Established`, often with `server: cloudflare`, comes from the site, not the network policy.
   Try an author PDF, arXiv or an institutional repository instead.
 - Verdicts rest on full texts. Search extracts are leads only.
