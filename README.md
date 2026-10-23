@@ -1,25 +1,26 @@
-# Research
+# research
 
-## Black box boundary spec methods
+Deep-research results from Claude Code cloud sessions. `main` holds only the setup;
+each run lives on its own `research/<kebab-title>` branch, with no PR. `CLAUDE.md` is
+the brief sessions read; this file is for you.
 
-How to specify observable behaviour at a black-box library boundary
-(category → level → form), and which spec forms coding agents handle
-reliably.
+## Starting a run
 
-| Step | Where |
-|---|---|
-| Question | [briefs/original-brief.md](briefs/original-brief.md) |
-| Survey notes (v1, search extracts only) | [research_notes/…/1-survey/](research_notes/Black%20box%20boundary%20spec%20methods/1-survey/) |
-| Verification input | [briefs/verification-pass-input.md](briefs/verification-pass-input.md) |
-| Verification notes and log (full texts) | [research_notes/…/2-verification/](research_notes/Black%20box%20boundary%20spec%20methods/2-verification/) |
-| **Report (v2, current)** | [reports/Black box boundary spec methods.md](reports/Black%20box%20boundary%20spec%20methods.md) |
-| Changes v1 → v2 | [reports/CHANGELOG.md](reports/CHANGELOG.md) |
+1. Start a cloud session on this repo.
+2. Paste or upload the brief and invoke `/deep-research`.
+3. The session runs a network preflight, creates the branch, then pushes notes and the
+   report.
 
-**Evidence status:** what is still unverified or open is listed in
-[open_items.md](research_notes/Black%20box%20boundary%20spec%20methods/2-verification/open_items.md).
+## Network
+- Network access is set in the environment's Network access setting.
+  `.claude/settings.json` only pre-approves tools, so you get fewer prompts.
+- `200 Connection Established` followed by a 403 (often `server: cloudflare`) means the
+  site blocked the request. No setting fixes it.
+- Publisher sites behind their own blocks include ACM, ScienceDirect, IEEE Xplore,
+  ResearchGate, DTIC, nowpublishers and OpenReview PDFs. Get those papers from outside
+  and add them to the brief.
 
-**Conventions:**
-- The files in `briefs/` are the inputs exactly as they were given, so the
-  paths they mention are from before this layout.
-- Line numbers in the verification notes refer to v1, which is on branch
-  `archive/report-v1` (commit `6a1e9f7`).
+## Evidence
+- Search extracts are leads, not evidence; claims based on them often have the wrong
+  figures, scope or attribution. Either confirm full-text access with the preflight, or
+  plan a verification pass.
