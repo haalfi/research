@@ -26,6 +26,10 @@ the brief sessions read; this file is for you.
   plan a verification pass.
 
 ## Workflow
+- Hooks in `.claude/hooks/`: `preflight.sh` checks the network at session start, and
+  `branch_guard.py` blocks git commands that touch branches other than `main` and the
+  session's own branch, and blocks commits and pushes on `main`. To allow another branch,
+  say so explicitly to the session.
 - Expect one commit per research track: the container is ephemeral, and the stop hook
   asks for commits.
 - A follow-up run gets a new title, so the old and new reports can be diffed.
