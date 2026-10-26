@@ -139,7 +139,7 @@ Counts are lower bounds; an operation counts only where found in a full text. "(
 | **Multi-range (vectored) read** | Columnar formats | object_store `get_ranges`; OpenDAL `Reader::fetch`; fsspec `cat_ranges` [doc] | 3/10 |
 | **Delete-contents / delete-empty-only guardrails** | Clean a folder but keep it; refuse a non-empty delete | pyarrow `delete_dir_contents(accept_root_dir, missing_dir_ok)` [doc PA]; fsspec `rmdir` [doc FS-API]; cloudpathlib `rmdir` (empty only, `DirectoryNotEmptyError`) [src CP; obs] | 3/10 |
 | **Post-write metadata / property update** | Fix content type or metadata after upload | Azure `set_blob_metadata` (replaces all), `set_http_headers`, `set_blob_tags` [doc AZ]; GCS `Blob.patch` (in place) [doc GCS]. S3 changes tags in place, but user metadata only by copy-replace [doc AWS-META]; s3fs `setxattr` = copy [src S3FS] | 2/10 native (3/10 incl. S3 tags) |
-| **Cache invalidation / local materialisation control** | Freshness, reclaiming cache state | fsspec `invalidate_cache`, `use_listings_cache` [doc FS-FEAT]; cloudpathlib `clear_cache`, `file_cache_mode` [doc CP] | 2/10 |
+| **Local cache layer and its control** (caching, invalidation, materialisation) | Repeated reads, offline edit, freshness, reclaiming cache state | fsspec caching filesystems, `open_local`, `invalidate_cache`, `use_listings_cache` [doc FS-API, FS-FEAT]; cloudpathlib cache modes, `clear_cache`, `file_cache_mode` [doc CP] | 2/10 |
 | Storage class / tier change | Cost | boto3, Azure, GCS [doc] | 3/10 |
 | Retention / legal hold / object lock | WORM compliance | boto3, Azure, GCS [doc] | 3/10 |
 | Bucket / container create and delete | Provisioning | pyarrow `allow_bucket_*`; s3fs `mkdir`; the three SDKs [doc/src] | 5/10 |
@@ -212,11 +212,11 @@ Counts are lower bounds; an operation counts only where found in a full text. "(
 
 | Comparable | Shape |
 |---|---|
-| gocloud | One `List(ListOptions{Prefix, Delimiter})`. No glob, no depth [doc GC] |
+| gocloud | One `List(ListOptions{Prefix, Delimiter})`. An empty delimiter gives a flat recursive listing. No glob, no depth [doc GC] |
 | object_store | `list` (recursive) vs `list_with_delimiter`; `list_with_offset`. No glob, no depth [doc OS] |
 | OpenDAL | Rust `list` + `list_with(...).recursive(true)` (gated, simulated by default); **Python also `scan`** (recursive) [src OD-PYI]. No glob found |
 | pyarrow | One call for inspect, list and walk: `get_file_info(path \| [paths] \| FileSelector(...))`. No glob; no depth in Python [doc PA; obs] |
-| fsspec | Separate `ls`, `find(maxdepth, withdirs)`, `walk(maxdepth, topdown)`, `glob(maxdepth)`; copy/get/put accept globs [doc FS-API, FS-COPY] |
+| fsspec | Separate `ls`, `find(maxdepth, withdirs)`, `walk(maxdepth, topdown)`, `glob(maxdepth)`, `expand_path`; copy/get/put accept globs and `recursive=`/`maxdepth=` [doc FS-API, FS-COPY] |
 | cloudpathlib | `iterdir`, `walk(lazy=)`, `glob`, `rglob` [doc CP] |
 | Vendor SDKs | Prefix + delimiter; only GCS has a server-side glob (`match_glob`) [doc GCS] |
 
@@ -273,13 +273,16 @@ The identity fields such a call returns (ETag, version) are opaque tokens, not c
 | **Configured per store + call-time error** | object_store | `S3ConditionalPut`, `S3CopyIfNotExists` config. Errors are `NotImplemented` or `NotSupported`, with no rule for which [src OS-SRC]. **Unsupported options get two policies: `tags` are ignored, `attributes` must error** [src OS-SRC L1946–1952] |
 | **Call-time error only** | gocloud, pyarrow, cloudpathlib, smart_open | `gcerrors.Unimplemented`; `ArrowNotImplementedError` or a generic `OSError`; `CloudPathNotImplementedError`; `NotImplementedError` [doc/obs] |
 | **Silent emulation or no-op** | fsspec, cloudpathlib, pyarrow, smart_open | fsspec `mkdir` = `pass`, `mv` = copy + rm, `mode="create"` = exists then write, and s3fs `ab` = download/re-upload [src]; cloudpathlib `mkdir` no-op [obs]; pyarrow drops metadata keys [doc; obs]; smart_open ignores unknown `transport_params` [doc; obs] |
-| (Path-scoped probe) | Hadoop | `hasPathCapability`: False may mean unknown; must be cheap and side-effect free [doc H-PCAP] |
+| (Path-scoped probe) | Hadoop | `hasPathCapability(path, cap)`. It "MUST NOT return True … unless it is known to be supported". False may mean unknown; must be cheap and side-effect free [doc H-PCAP] |
 
 **What OpenDAL gates** [doc OD-CAP]:
-- create_dir, rename, copy, recursive list
-- user metadata, append, presign
-- conditional and versioned variants
-- multipart and batch limits
+- create_dir, rename, copy, `list_with_recursive`
+- `write_with_user_metadata`, append, presign
+- conditional and versioned variants of read, write, stat, delete and copy
+- multipart limits `write_multi_{min,max}_size`, `delete_max_size`
+- `shared`
+
+The catalogue's gated OP-19 and OP-20 match OpenDAL's `create_dir` and `write_with_user_metadata`. OpenDAL also gates OP-07, OP-12 and OP-13, and its S3 service reports `rename` and `create_dir` as Unsupported natively [doc OD-CAP; src OD-SRC].
 
 **Python binding gaps** relative to the effective capability: presign exists only on `AsyncOperator`, so a sync Python caller cannot reach it whatever `capability().presign_read` says [src OD-PYI; inf].
 
@@ -305,19 +308,19 @@ The identity fields such a call returns (ETag, version) are opaque tokens, not c
 
 | Decision | object_store 0.14.2 | OpenDAL 0.59.5 / Py 0.47.12 | gocloud v0.47.0 | fsspec 2026.9.0 | pyarrow / smart_open / cloudpathlib | Vendor SDKs |
 |---|---|---|---|---|---|---|
-| **Key validation** | `Path`: no empty segments, no `.`/`..`, no control chars; `parse` rejects, `from` percent-encodes [doc OS-SRC] | normalised on every call; trailing `/` = dir; `..` passed through [src] | non-UTF-8 → `InvalidArgument`; per-driver `__0x<hex>__` escaping [doc/src] | `_strip_protocol`, `root_marker` [src] | pyarrow rejects a scheme; others need a URI; none normalise `..` or `//` [obs] | S3 ≤1024 B; Azure ≤1024 chars, ≤254 segments; GCS ≤1024 B, no CR/LF, not `.`/`..` [doc] |
-| **Error taxonomy** | `Error` enum (NotFound, AlreadyExists, Precondition, NotModified, NotSupported, NotImplemented, …) [doc] | `ErrorKind` + Permanent/Temporary/Persistent [doc]; conditional errors defined by spec: `ConditionNotMatch` only for explicit conditions, `Conflict` for unrelated service conflicts [doc OD-SPEC]; Python classes not builtins [src] | `gcerrors.ErrorCode` + `ErrorAs` [doc] | builtins; implementations translate [src] | builtins + `ArrowInvalid`; smart_open S3 → `OSError`; cloudpathlib own hierarchy [obs] | botocore `ClientError`; Azure `Resource*Error`; api-core `PreconditionFailed`… [doc] |
-| **Retries** | built in, 10 retries / 3 min; timeouts retried only if idempotent or safe [doc+src] | opt-in `RetryLayer` for Temporary errors [doc] | not portable [inf] | per implementation (s3fs 5) [src] | pyarrow S3 3 attempts; others via boto3 [doc] | botocore legacy/standard/adaptive; **Azure default `ExponentialRetry` `retry_total=3`** (the README's 10 is the `StorageRetryPolicy` base default) [src AZ-SRC]; GCS idempotency-aware policies but uploads and deletes retry by default [doc GCS-RETRY] |
+| **Key validation** | `Path`: no leading or trailing `/`, no empty segments, no `.`/`..`, no control chars; `parse` rejects, `from` percent-encodes (`foo/../bar` → `foo/%2E%2E/bar`); no length check [doc OS-SRC] | normalised on every call; trailing `/` = dir; `..` passed through [src] | non-UTF-8 → `InvalidArgument`; per-driver `__0x<hex>__` escaping [doc/src] | `_strip_protocol`, `root_marker` [src] | pyarrow rejects a scheme; others need a URI; none normalise `..` or `//` [obs] | S3 ≤1024 B; Azure ≤1024 chars, ≤254 segments; GCS ≤1024 B, no CR/LF, not `.`/`..` [doc] |
+| **Error taxonomy** | `Error` enum (NotFound, AlreadyExists, Precondition, NotModified, NotSupported, NotImplemented, PermissionDenied, Unauthenticated, InvalidPath, Generic, …) [doc] | `ErrorKind` (Unsupported, NotFound, AlreadyExists, ConditionNotMatch, RangeNotSatisfied, IsADirectory, RateLimited, …) + Permanent/Temporary/Persistent [doc]; conditional errors defined by spec: `ConditionNotMatch` only for explicit conditions, `Conflict` for unrelated service conflicts [doc OD-SPEC]; Python classes not builtins [src] | `gcerrors.ErrorCode` + `ErrorAs` [doc] | builtins; implementations translate [src] | builtins + `ArrowInvalid`; smart_open S3 → `OSError`; cloudpathlib own hierarchy [obs] | botocore `ClientError`; Azure `Resource*Error`; api-core `PreconditionFailed`… [doc] |
+| **Retries** | built in, `RetryConfig` 10 retries / 3 min; timeouts retried only if idempotent or safe; S3 Overwrite put/copy marked idempotent [doc+src] | opt-in `RetryLayer`, retries only Temporary errors, then marks them Persistent [doc] | not portable [inf] | per implementation (s3fs 5 retries, allow-list + string match) [src] | pyarrow S3 3 attempts; others via boto3 [doc] | botocore legacy/standard/adaptive; **Azure default `ExponentialRetry` `retry_total=3`** (the README's 10 is the `StorageRetryPolicy` base default) [src AZ-SRC]; GCS idempotency-aware policies but uploads and deletes retry by default [doc GCS-RETRY] |
 | **Timeouts** | `ClientOptions` 30 s / 5 s [doc] | opt-in `TimeoutLayer` 60 s / 10 s [doc] | per call `ctx` [doc] | `FSTimeoutError`; per implementation [src] | pyarrow `request_timeout` ignored on Linux [doc] | botocore 60/60 s; Azure 20/60 s; GCS 60 s [doc] |
 | **Consistency stated** | atomic put; list order not guaranteed; keep ETag and version [doc] | none general; conditional metadata contract: advertised ETag/version must be populated and reusable as a condition [doc OD-SPEC] | List may miss recent writes; not readable until Close [doc] | none; `DirCache` may be stale [doc] | — | S3, Azure, GCS strong read-after-write incl. list [doc] |
 | **Identity token (ETag)** | `e_tag` and `version`; "Stores will use differing combinations…" [doc OS] | `if_not_changed` lowers to a version match, else an ETag match [doc OD-SPEC] | `Attributes.ETag`, `MD5` [src] | `ukey`, `checksum` [src] | — | **S3: ETag is an MD5 only for single-part plaintext/SSE-S3. SSE-C/SSE-KMS → not MD5. Multipart/UploadPartCopy → MD5 of the part MD5s + `-N`. Directory buckets: no MD5. ETag ignores metadata changes** [doc AWS-OBJ, AWS-INTEG] |
-| **Closing** | none (Drop) [inf] | no `Operator.close`; Writer close/abort or data lost [doc] | `Bucket.Close`; check `Writer.Close` error [doc] | instance cache, `clear_instance_cache` [doc] | pyarrow global `finalize_s3`; cloudpathlib GC [doc] | `close()`; Azure context managers [doc] |
+| **Closing** | none (Drop) [inf] | no `Operator.close`; Writer close/abort or "data could be lost" [doc] | `Bucket.Close`, later calls → `FailedPrecondition`; "always check the error of Close" [doc; src] | instances cached by args and pinned against GC until `clear_instance_cache`; s3fs `weakref.finalize` [doc; src] | pyarrow global `finalize_s3`; cloudpathlib GC [doc] | `close()`; Azure context managers [doc] |
 | **Async parity** | async-only; obstore `_async` twins [doc] | async + blocking; Python `AsyncOperator`/`Operator`, **not at parity (presign async-only)** [src OD-PYI] | sync + `ctx` [doc] | `AsyncFileSystem` + sync wrappers [doc] | none | Azure `aio`; boto3 none; GCS none [doc] |
 | **Concurrency / instrumentation** | `LimitStore`, `ThrottledStore` | `ConcurrentLimitLayer`, ~20 layers | OpenTelemetry | `batch_size`, callbacks | — | — |
 | **Prefix scope (OP-16)** | `PrefixStore` | `root` | `PrefixedBucket`, `SingleKeyBucket` | `DirFileSystem` | `SubTreeFileSystem` | — |
 
 **Observations [inf unless cited].**
-- `..` handling differs in all four abstractions.
+- `..` handling differs in all four abstractions: object_store rejects or encodes it; gocloud escapes the `/` of `../`; OpenDAL passes it through generically; fsspec DirFileSystem guards it only on local disk.
 - Retry safety is tied to idempotency (object_store), error status (OpenDAL), an allow-list (s3fs), or not decided (gocloud).
 - GCS retries deletes by default [doc GCS-RETRY], so a retried delete that already succeeded can surface as NotFound [inf].
 - Python bindings diverge from their Rust cores in exception typing and in API surface: obstore, and OpenDAL Python `remove_all`, `scan`, async-only presign [src].
@@ -426,7 +429,7 @@ Full citations are in the first run's notes 02–06 and in V01. Lines marked **(
 ### OP-10 Delete item
 - Missing key:
   - succeeds in S3 (DeleteObjects), OpenDAL, and object_store S3 and memory;
-  - errors in object_store local/GCP/Azure, gocloud, fsspec, Azure and GCS;
+  - errors in object_store local/GCP/Azure, gocloud, fsspec (MemoryFS aligned in #2140), Azure (`BlobNotFound`) and GCS;
   - Hadoop returns False;
   - cloudpathlib defaults to `missing_ok=True` [doc].
 - **(new)** In OpenDAL this holds even under a condition: "Deleting a file that does not exist remains a successful no-op" [doc OD-SPEC].
@@ -526,7 +529,7 @@ Full citations are in the first run's notes 02–06 and in V01. Lines marked **(
 
 ### OP-20 User metadata
 - Limits:
-  - S3: 2 KB, keys lowercased, ASCII, immutable except by copy.
+  - S3: 2 KB, keys stored lowercase, US-ASCII; non-ASCII values RFC 2047-encoded; immutable except by copy.
   - Azure: C# identifiers, case-insensitive, 8 KB.
   - GCS: 8 KiB, patchable [doc].
 - gocloud lowercases keys and escapes [doc].
@@ -626,8 +629,8 @@ Cells changed against the first report are marked **Δ**.
 5. **OP-18:** OpenDAL's effective flags plus pre-dispatch check, Hadoop's "False = unknown", and gates that depend on bucket type. Comparables also mix silent ignore with error (object_store tags vs attributes), which is a precedent to decide against or for explicitly [inf].
 6. **OP-24:** a thin precedent (2/10), and the two disagree on NotFound.
 7. **Shared decisions most often retrofitted, to decide once:**
-   - `..` containment
-   - missing-key delete
+   - `..` containment (three libraries in 2026)
+   - missing-key delete (split across comparables)
    - exception typing in Python bindings
    - sync/async API parity in bindings (OpenDAL presign)
    - retry coupled to idempotency
@@ -644,6 +647,13 @@ Cells changed against the first report are marked **Δ**.
   - the content of the fsspec 2023.9.0 glob change
   - reports that botocore 1.36 broke S3-compatible servers
 - **Resolved here:** the Azure `retry_total` default (3) and pyarrow S3 copies over 5 GB (single CopyObject).
+- **Versions:**
+  - Hadoop pages were read at both 3.3.5 ("stable") and 3.5.0 ("current").
+  - smart_open docs come from `develop`, which may be ahead of 8.0.4.
+  - Some fsspec, OpenDAL and object_store source was read on main or master, possibly slightly ahead of the release.
+- **Corrections carried over from the first run's workflow track (its notes 01):**
+  - A 1–2 vote refuted a bundled claim about gocloud `SignedURL`/`Unimplemented`. The v0.47.0 source and docs confirm `SignedURL` → `Unimplemented`, and that is what this report uses.
+  - Its statement that gocloud returns `PreconditionFailed` is superseded: the code is `FailedPrecondition` (verified in source).
 - **External inputs:** the ChatGPT and Perplexity texts were leads only. MinIO claims from the Perplexity answer rest on vendor marketing and are not used.
 - **This run's own limits:**
   - The OpenDAL conditional spec page is undated except for "Last updated on Aug 31, 2026". It is a moving reference, not pinned to 0.59.5.
