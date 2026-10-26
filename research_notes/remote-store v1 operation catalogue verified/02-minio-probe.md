@@ -1,7 +1,7 @@
 # Track 02: MinIO probe of the S3 open items
 
 - **Run:** by the user on 2026-10-26 against MinIO, using boto3 with the user's own client arguments.
-- **Versions:** neither the MinIO server version nor the boto3 version was stated.
+- **Versions:** the user described the server as "latest officially released and supported free to use minio" as of 2026-10-26. No exact `RELEASE.*` tag was given. The boto3 version was not stated.
 - **Script:** given in the conversation. It puts one 10-byte object (`0123456789`), runs the probes, then deletes the object.
 - **Label:** every row is **[obs, MinIO]**. MinIO is S3-compatible, not AWS, so these results do not verify AWS behaviour. They do show that MinIO matches the behaviour RFC 9110 and AWS document.
 
