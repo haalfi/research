@@ -640,10 +640,12 @@ Cells changed against the first report are marked **Δ**.
 
 - **Runs:** nothing was run against real AWS, Azure or GCS. [obs] items are from the moto S3 emulator and local disk (first run).
 - **Issue pages:** GitHub issue pages are unreachable; issue numbers come from changelogs.
+- **Still unverified on AWS, observed on MinIO** (run by the user; server version not stated; details in V02 `02-minio-probe.md`):
+  - **Range reads:** a range starting at or past the size gives 416 `InvalidRange`. An end past EOF is clamped (206). A suffix larger than the object returns the whole object.
+  - **Missing-key deletes:** `delete_object` on a missing key gives 204; `delete_objects` lists the key under `Deleted`.
+  - **Error codes:** `NoSuchKey` (404), `InvalidRange` (416), `PreconditionFailed` (412 for both `If-None-Match: *` and a wrong `If-Match`). `head_object` on a missing key carries only status `'404'`, no code string.
+  - These match RFC 9110, object_store's `GetRange` docs and AWS DeleteObjects docs. They do not verify AWS itself.
 - **Still unverified:**
-  - the S3 error-code strings
-  - S3 behaviour for a range starting past EOF
-  - the general 204 for deleting a missing S3 key
   - the content of the fsspec 2023.9.0 glob change
   - reports that botocore 1.36 broke S3-compatible servers
 - **Resolved here:** the Azure `retry_total` default (3) and pyarrow S3 copies over 5 GB (single CopyObject).
