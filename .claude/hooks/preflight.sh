@@ -14,5 +14,5 @@ else
   echo "000 = no HTTP response: the proxy blocked it (fix: the environment's Network access setting)."
   echo "An HTTP code such as 403 = the site itself refused."
 fi
-echo "Current branch: ${branch:-unknown}. Deliver on a fresh research/<kebab-title> branch from origin/main; no PR."
+echo "Current branch: ${branch:-unknown}. Deliver on the topic's research/<kebab-topic> branch (new topic: create it from origin/main); no PR."
 exit 0
