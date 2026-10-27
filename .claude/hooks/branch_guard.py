@@ -174,8 +174,7 @@ def check_segment(seg, cwd):
     if cmd != "branch" and any(ALL_REFS.match(a) for a in rest):
         return f"`git {cmd}` with --all/--branches/--remotes/--glob/--mirror reads every branch"
     if cmd in ("commit", "push") and current == "main":
-        return f"`git {cmd}` on main is not allowed; create a research/<kebab-title> branch first"
-
+        return f"`git {cmd}` on main is not allowed; switch to the topic's research/<kebab-topic> branch first"
     if cmd == "remote" and rest[:1] == ["update"]:
         return "`git remote update` fetches every branch; use `git fetch origin <branch>`"
 
