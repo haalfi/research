@@ -3,8 +3,11 @@
 Holds deep-research results only. No code besides `.claude/`.
 
 ## Delivery
-- Each request gets a fresh branch from `origin/main`: `research/<kebab-title>`, even if the
-  harness assigned another branch. Never commit to `main`, never open a PR.
+- Each research topic gets one branch from origin/main: research/<kebab-topic>.
+  Follow-ups on the same topic stay on that branch; only a new topic gets a new branch.
+  Never commit to main, never open a PR.
+- A follow-up or verification run gets a new title (e.g. `<Title> verified`) on the topic's branch.
+  Never edit an earlier report or its notes, so the two can be diffed.
 - Read only `main` and your own branch. Never fetch, check out, diff or read files from any
   other branch (git or GitHub tools) unless the user explicitly names that branch and allows it.
   Only then add it to `.git/claude-allowed-branches`; the branch-guard hook enforces this.
@@ -13,8 +16,6 @@ Holds deep-research results only. No code besides `.claude/`.
   - `briefs/<Title>.md`: the input brief, exactly as given
   - `research_notes/<Title>/`: one notes file per track
   - `reports/<Title>.md`: the final report
-- A follow-up or verification run gets a new title (e.g. `<Title> verified`).
-  Never edit an earlier report or its notes, so the two can be diffed.
 - Commit messages: no model names.
 
 ## Running
