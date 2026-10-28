@@ -1,6 +1,6 @@
 # T4 — Verification of § 3.9 / § 4 (variation vocabularies; one contract + declared profile + narrow-only rule) and storage/IO API gaps
 
-Scope: verification pass over `reports/Black box boundary spec methods.md` on branch `archive/report-v1` (commit `6a1e9f7`) § 3.9 (l. 271–275), § 4 (l. 292–326), § 8.1 (l. 547) and the matching § 8.2 rows (l. 562–630), plus the named gaps. Every verdict below rests on a full text fetched on 2026-10-22 into a temporary container directory (not kept; each verdict names its source URL), not on search extracts. Grades follow the brief: A peer-reviewed/measured, B documented industrial practice/normative text, C practitioner report, D opinion. Inference is marked *Inference*.
+Scope: verification pass over `reports/Black box boundary spec methods.md` § 3.9 (l. 271–275), § 4 (l. 292–326), § 8.1 (l. 547) and the matching § 8.2 rows (l. 562–630), plus the named gaps. Every verdict below rests on a full text fetched on 2026-10-22 into `/tmp/claude-0/-home-user-research/6eb654f9-be93-5692-960f-f1941dafeecc/scratchpad/dl_t4/`, not on search extracts. Grades follow the brief: A peer-reviewed/measured, B documented industrial practice/normative text, C practitioner report, D opinion. Inference is marked *Inference*.
 
 ## Q1. Do the claims in § 3.9 and § 4 survive the full texts?
 

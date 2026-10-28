@@ -36,7 +36,7 @@ Summary: 17 † dropped, 4 kept in part, 2 kept in full.
 
 ## Checked claims
 
-Line numbers refer to `reports/Black box boundary spec methods.md` on branch `archive/report-v1` (commit `6a1e9f7`) (v1, the report under review).
+Line numbers refer to `reports/Black box boundary spec methods.md` (the unchanged report under review).
 
 | ID | Location (section, line) | Claim | Source URL (as read) | Verdict | Correction |
 |---|---|---|---|---|---|
