@@ -5,7 +5,7 @@ Holds deep-research results only. No code besides `.claude/`.
 ## Delivery
 - Each research topic gets one branch from origin/main: research/<kebab-topic>.
   Follow-ups on the same topic stay on that branch; only a new topic gets a new branch.
-  Never commit to main, never open a PR.
+  Name the branch after the topic, never the run.  Never commit to main, never open a PR.
 - A follow-up or verification run gets a new title (e.g. `<Title> verified`) on the topic's branch.
   Never edit an earlier report or its notes, so the two can be diffed.
 - Read only `main` and your own branch. Never fetch, check out, diff or read files from any
