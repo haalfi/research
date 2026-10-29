@@ -116,7 +116,7 @@ All models are 2023 to 2024 vintage. Current models may do better or worse.
   only available validation of an extraction step. Here it means extracting
   twice, by two agents with different prompts or models, and diffing the
   claim sets.
-- One acknowledged extraction loss in this run: Quasar (pending verification,
+- One acknowledged extraction loss in this run: Quasar (arXiv 2601.19693, verified;
   see T3 and report) filtered sections by keyword before LLM scoring, "This
   means that some information may have been lost."
 
@@ -154,7 +154,7 @@ Extraction is the judged step and must be validated by dual extraction.
   *structured* rationale, re-run on every edit, such as "selection
   contradicted" and "opposed by a selected alternative". Its "Tradeoff
   Missing" flags a one-sided argument against a declared knowledge base.
-  Pending full-text verification. It works on structured rationale, not
+  Verified in full text (§7.3); its evaluation (20 subjects) did not measure defect yield. It works on structured rationale, not
   prose. Its evaluation did not measure defect yield (see report § (d)).
 - No surviving source tracks "only" or "every" claims or adopted option text
   specifically. RFC-0028's evidence table is the only measurement: C2 (an

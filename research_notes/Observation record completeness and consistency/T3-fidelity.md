@@ -1,9 +1,9 @@
 # T3. Fidelity of a decision to its elicitation dialog
 
 Votes are confirm-refute from three adversarial verifiers over full texts.
-Items marked *pending* were extracted from full text by the workflow but
+Items marked *verified separately* were extracted from full text by the workflow but
 dropped by its verification budget. They were re-checked by a separate
-verification pass; see `T4-T5-verification.md`.
+verification pass; see `verification-log.md`.
 
 ## 1. Base rate: how often an LLM condensing a dialog adds content
 
@@ -28,9 +28,9 @@ complete, each a plausible consequence of the answer but not the answer.
 An added-commitment check should look for **implied** commitments, not
 invented facts.
 
-### TofuEval (Tang et al., NAACL 2024) — A, pending
+### TofuEval (Tang et al., NAACL 2024) — A, verified separately
 
-- Averaged over five LLMs, 17.5 to 27.8% of summary sentences and 30.4 to
+- Averaged over five LLMs, 14.4 to 27.8% of summary sentences and 30.4 to
   46.0% of summaries of MediaSum and MeetingBank dialogs were factually
   inconsistent (professional annotators, 1,479 summaries).
 - Only single-sentence errors were annotated, so its detector figures do
@@ -46,7 +46,7 @@ invented facts.
   **33.22** (P 35.60, R 31.14), balanced accuracy 70.27. (vote 3-0)
 - Agents measured: ChatGPT-era. Current models may do better.
 
-### TofuEval — A, pending
+### TofuEval — A, verified separately
 
 - Open-source LLM evaluators: 50 to 60% balanced accuracy (50% is trivial).
   GPT-4 was best, at about 65 to 68% on main-topic summaries.
@@ -64,7 +64,7 @@ output is leads for a human, never a verdict.
 
 ## 3. Agents writing decision records from dialog
 
-### LLM agent turning meeting transcripts into ADRs (arXiv 2601.19693 or 2608.17694; see verification) — A-pre, pending
+### GADR: Costa da Silva & Gama, meeting transcripts to ADRs (arXiv 2608.17694, SBES 2026 header) — A-pre, authors evaluate their own tool, verified separately
 
 - Expert review found the agent "transformed tentative discussions into
   accepted decisions" and inserted unsupported claims. RAG enrichment brought

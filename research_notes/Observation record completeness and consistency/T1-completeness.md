@@ -103,7 +103,7 @@ that the Environment did not name. This is a mapping, not a measurement.
 - An LLM agent turning meeting transcripts into ADRs covered about 18 of 23
   decisions that four senior architects listed. It also found decisions the
   seniors had not listed, so the expert baseline was itself incomplete. Not
-  voted; pending the verification agent (see T3 and the report).
+  voted by the workflow; verified separately (GADR, arXiv 2608.17694; see T3).
 
 ### What is measured, and what is not
 
@@ -137,7 +137,7 @@ that the Environment did not name. This is a mapping, not a measurement.
     verification debt (see report § 5).
   - A falling escape rate over OP-02, OP-03 and later records is evidence
     the axes are converging. A constant rate means they are not.
-- SEURAT's "Tradeoff Missing" check (T2 and report; pending verification) is
+- SEURAT's "Tradeoff Missing" check (T2; verified, Burge 2005 §7.3.2.10) is
   the one published device that flags a missing consideration from a
   pre-declared knowledge base. That is, again, coverage only of what was
   declared.
