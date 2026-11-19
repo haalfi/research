@@ -69,3 +69,16 @@ proof of absence.
 | csvw | 4.2.0 | 2026-11-06 | CSVW |
 | jsonschema | 4.26.0 | 2026-01-07 | generic validator for ODCS/ODPS/OORS/Data Package/Arazzo/OpenLineage JSON Schemas |
 OpenSLO: validation defined by the Go SDK / `oslo` CLI; no Python validator listed (first-hand, `website/docs/tools.md`).
+
+## Addendum (same run)
+- CloudEvents documented extensions (cloudevents/spec main, 1.0.3-wip; latest release v1.0.2 per README), first-hand:
+  `extensions/sequence.md` ("a string that can be lexicographically compared … lower … comes first"; meaning left to
+  out-of-band agreement), `extensions/recordedtime.md` (time the occurrence was recorded, distinct from `time` → event-level
+  bitemporality), `extensions/data-classification.md` (classifies payloads for GDPR/HIPAA-style handling; classification, not redaction).
+- ODCS v3.2.0 `SchemaBaseProperty.classification` (free string, e.g. confidential/restricted/public) and `criticalDataElement`:
+  native labels; no redaction action. `SchemaObject` keys: logicalType, physicalName, dataGranularityDescription, properties,
+  relationships, quality, context.
+- ODCS `authoritativeDefinitions[]` = {id, url, type, description}, `type` open ("Custom `type` values are allowed; tooling that
+  does not recognise a custom value should treat the entry as an opaque link", `docs/authoritative-definitions.md`).
+- ODCS SFTP/S3 `location` examples use a `{model}` placeholder (`sftp://123.123.12.123/{model}/*.json`); the placeholder's meaning
+  is not defined in the field description (first-hand), so a file→dataset mapping by placeholder is example-level only (inference).
