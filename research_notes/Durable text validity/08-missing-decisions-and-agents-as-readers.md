@@ -115,8 +115,8 @@ Queries (arXiv API unless marked otherwise):
 - TYPE: first-hand study. ACCESS: full text read (abstract, §3 taxonomy, RQ1/RQ2).
 - Locators:
   - Abstract: "approximately 50% of generated code reviews and 20% of generated commit messages contain hallucinations".
-  - Taxonomy (§3.2) includes Input Inconsistency, e.g. "speculating intent that contradicts the code change in commit messages", and "intention violation".
-  - Single-metric detection: ROC-AUC 0.538–0.566 on code review (§5). Combined metrics: 69.1% and 75.3% (per abstract and intro).
+  - Taxonomy (§3.2) includes Input Inconsistency, e.g. "speculating intent that contradicts the code change in commit messages". ("Intention violation" in this taxonomy means failing the task, e.g. a summary instead of a review. It is not about rationale.)
+  - §1: individual metrics reach "56.6% ROC-AUC for code review and 61.7% for commit messages"; combining metrics "yields substantial improvements (69.1% and 75.3%". §5: generator-agnostic ranges are 0.538–0.566 (CodeReviewer) and 0.562–0.617 (CommitBench).
   - Generators were fine-tuned small models (Llama3.1-8B, Qwen2.5-7B, CCT5), not agents.
 - Bearing: C6 ("supply a missing reason that later reads as recorded intent"). Measured: "intent" text that contradicts the diff.
   - Not measured: intent that is *unverifiable* but consistent with the diff, which is the case C6 cares about most.
